@@ -1,7 +1,7 @@
 #ifndef EDITOR_WINDOW_H
 #define EDITOR_WINDOW_H
 
-#include <FL/Fl.H>
+#include "FL/Fl.H"
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Button.H>
@@ -10,11 +10,15 @@
 #include <FL/Fl_Text_Buffer.H>
 #include <FL/fl_ask.H>
 #include <FL/Fl_File_Chooser.H>
+#include <FL/Fl_Menu_Bar.H>
 
 
-int changed = 0;
-char filename[256] = "";
-Fl_Text_Buffer *textbuf;
+extern int changed;
+extern int loading;
+extern char filename[256];
+extern char title[256];
+extern Fl_Text_Buffer* textbuf;
+
 
 class MyEditor : public Fl_Double_Window {
     public:
@@ -45,7 +49,16 @@ void paste_cb(Fl_Widget*, void* v);
 void quit_cb(Fl_Widget*, void*);
 void replace_cb(Fl_Widget*, void* v);
 void replace2_cb(Fl_Widget*, void* v);
+void replall_cb(Fl_Widget*, void* v);
+void replcan_cb(Fl_Widget*, void* v);
+void save_cb(void);
+void saveas_cb(void);
 
+int check_save(void);
+void load_file(char *new_file, int ipos);
+void save_file(char *newfile);
+void set_title(Fl_Window* w);
+Fl_Window* new_view();
 
 
 #endif
