@@ -2,6 +2,7 @@
 #define EDITOR_WINDOW_H
 
 #include "FL/Fl.H"
+#include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Button.H>
@@ -37,12 +38,14 @@ class MyEditor : public Fl_Double_Window {
 
 };
 
+void build_menu_bar(Fl_Menu_Bar *menu, Fl_Widget *w);
+
 void changed_cb(int, int nInserted, int nDeleted,int, const char*, void* v);
 void copy_cb(Fl_Widget*, void* v);
 void cut_cb(Fl_Widget*, void* v);
 void delete_cb(Fl_Widget*, void* v);
-void find_cb(Fl_Widget* w, void* v);
-void find2_cb(Fl_Widget* w, void* v);
+void find_cb(Fl_Widget*, void* v);
+void find2_cb(Fl_Widget*, void* v);
 void new_cb(Fl_Widget*, void*);
 void open_cb(Fl_Widget*, void*);
 void paste_cb(Fl_Widget*, void* v);

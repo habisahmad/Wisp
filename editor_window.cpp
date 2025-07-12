@@ -7,39 +7,10 @@ int changed = 0;
 int loading = 0;
 char filename[256] = "";
 char title[256] = "";
-Fl_Text_Buffer* textbuf = nullptr;
-
-Fl_Menu_Item menu[] = {
-    { "&File", 0, 0, 0, FL_SUBMENU },
-        { "&New File", 0, (Fl_Callback *)new_cb },
-        { "&Open File...", FL_CTRL + 'o', (Fl_Callback *)open_cb },
-        { "&Save File", FL_CTRL + 's', (Fl_Callback *)save_cb },
-        { "Save File &As...", FL_CTRL + FL_SHIFT + 's', (Fl_Callback *)saveas_cb, 0, FL_MENU_DIVIDER },
-        { "E&xit", FL_CTRL + 'q', (Fl_Callback *)quit_cb, 0 },
-        { 0 },
-
-    { "&Edit", 0, 0, 0, FL_SUBMENU },
-        { "Cu&t", FL_CTRL + 'x', (Fl_Callback *)cut_cb },
-        { "&Copy", FL_CTRL + 'c', (Fl_Callback *)copy_cb },
-        { "&Paste", FL_CTRL + 'v', (Fl_Callback *)paste_cb }, 
-        { "&Delete", 0, (Fl_Callback *)delete_cb },
-        { 0 },
-
-    { "&Search", 0, 0, 0, FL_SUBMENU },
-        { "&Find...", FL_CTRL + 'f', (Fl_Callback *)find_cb },
-        { "F&ind Again", FL_CTRL + 'g', find2_cb },
-        { "&Replace", FL_CTRL + 'r', replace_cb },
-        { "Re&place Again", FL_CTRL + 't', replace2_cb },
-        { 0 },
-
-    { 0 }
-};
+Fl_Text_Buffer* textbuf;
 
 MyEditor::MyEditor(int w, int h, const char* t) : Fl_Double_Window(w, h, t) {
-    // Copy the menu items to menu bar 
-    Fl_Menu_Bar *m = new Fl_Menu_Bar(0, 0, 640, 30);
-    m->copy(menu);
-
+    textbuf = new Fl_Text_Buffer();
     editor = new Fl_Text_Editor(0, 30, 640, 370);
     editor->buffer(textbuf);
 
@@ -49,15 +20,29 @@ MyEditor::MyEditor(int w, int h, const char* t) : Fl_Double_Window(w, h, t) {
 
     // Define font
     editor->textfont(FL_COURIER);
+    Fl_Menu_Bar *m = new Fl_Menu_Bar(0, 0, 640, 30);
+    m->add("&File/New File", 0, (Fl_Callback *)new_cb);
+    m->add("&File/Open File...", FL_CTRL + 'o', (Fl_Callback *)open_cb);
+    m->add("&File/Save File...", FL_CTRL + 's', (Fl_Callback *)save_cb);
+    m->add("&File/Save File As...", FL_CTRL + FL_SHIFT + 's', (Fl_Callback *)saveas_cb);
+    m->add("&File/Exit", FL_CTRL + 'q', (Fl_Callback *)quit_cb, 0);
 
+    m->add("&Edit/Cut", FL_CTRL + 'x', (Fl_Callback *)cut_cb, this);
+    m->add("&Edit/Copy", FL_CTRL + 'c', (Fl_Callback *)copy_cb, this);
+    m->add("&Edit/Paste", FL_CTRL + 'v', (Fl_Callback *)paste_cb, this);
+    m->add("&Edit/&Delete", 0, (Fl_Callback *)delete_cb, this);
 
+    m->add("&Search/&Find", FL_CTRL + 'f', (Fl_Callback *)find_cb, this);
+    m->add("&Search/&Find Again", FL_CTRL + 'g', (Fl_Callback *)find2_cb, this);
+    m->add("&Search/&Replace", FL_CTRL + 'r', (Fl_Callback *)replace_cb, this);
+    m->add("&Search/&Replace Again", FL_CTRL + 't', (Fl_Callback *)replace2_cb, this);
     // Replace dialog
-    Fl_Window *replace_dlg = new Fl_Window(300, 105, "Replace");
-    Fl_Input *replace_find = new Fl_Input(70, 10, 200, 5, "Find:");
-    Fl_Input *replace_with = new Fl_Input(70, 40, 200, 25, "Replace:");
-    Fl_Button *replace_all = new Fl_Button(10, 70, 90, 25, "Replace All");
-    Fl_Button *replace_next = new Fl_Button(105, 70, 120, 25, "Replace Next");
-    Fl_Button *replace_cancel = new Fl_Button(230, 60, 70, 25, "Cancel");
+    replace_dlg = new Fl_Window(300, 105, "Replace");
+    replace_find = new Fl_Input(70, 10, 200, 5, "Find:");
+    replace_with = new Fl_Input(70, 40, 200, 25, "Replace:");
+    replace_all = new Fl_Button(10, 70, 90, 25, "Replace All");
+    replace_next = new Fl_Return_Button(105, 70, 120, 25, "Replace Next");
+    replace_cancel = new Fl_Button(230, 60, 70, 25, "Cancel");
 }
 
 
@@ -88,23 +73,24 @@ void delete_cb(Fl_Widget*, void* v) {
     textbuf->remove_selection();
 }
 
-void find_cb(Fl_Widget* w, void* v){
-    MyEditor* e = (MyEditor*) v;
+void find_cb(Fl_Widget*, void* v){
+    MyEditor* e = (MyEditor*)v;
     // Copy User Input to val
-    const char* val = fl_input("Search String:", e->search);
+    const char* val; 
+    val = fl_input("Search String:", e->search);
     // If user entered a string
-    if (val != NULL){
+    if (val){
         strcpy(e->search, val);
-        find2_cb(w, v);
+        find2_cb(nullptr, v);
     }
 }
 
-void find2_cb(Fl_Widget* w, void* v) {
+void find2_cb(Fl_Widget*, void* v) {
     MyEditor* e = (MyEditor*)v;
 
     if (e->search[0] == '\0'){
         // If string is blank get another
-        find_cb(w, v);
+        find_cb(nullptr, v);
         return;
     }
     int pos = e->editor->insert_position();
@@ -113,8 +99,9 @@ void find2_cb(Fl_Widget* w, void* v) {
         textbuf->select(pos, pos+strlen(e->search));
         e->editor->insert_position(pos+strlen(e->search));
         e->editor->show_insert_position();
+
     }
-    else fl_alert("No occurences of \'%s'\ found", e->search);
+    else fl_alert("No occurences found");
 }
 
 // clears the text of editor
