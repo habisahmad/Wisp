@@ -95,6 +95,11 @@ void find2_cb(Fl_Widget*, void* v) {
     }
     int pos = e->editor->insert_position();
     int found = textbuf->search_forward(pos, e->search, &pos);
+    // Wrap to the begginng and search for the first instance
+    if (!found){
+        pos = 0;
+        found = textbuf->search_forward(pos, e->search, &pos);
+    }
     if (found) {
         textbuf->select(pos, pos+strlen(e->search));
         e->editor->insert_position(pos+strlen(e->search));
