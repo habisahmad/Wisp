@@ -38,11 +38,14 @@ MyEditor::MyEditor(int w, int h, const char* t) : Fl_Double_Window(w, h, t) {
     m->add("&Search/&Replace Again", FL_CTRL + 't', (Fl_Callback *)replace2_cb, this);
     // Replace dialog
     replace_dlg = new Fl_Window(300, 105, "Replace");
-    replace_find = new Fl_Input(70, 10, 200, 5, "Find:");
+    replace_find = new Fl_Input(70, 10, 200, 25, "Find:");
     replace_with = new Fl_Input(70, 40, 200, 25, "Replace:");
     replace_all = new Fl_Button(10, 70, 90, 25, "Replace All");
+    replace_all->callback(replall_cb, this);
     replace_next = new Fl_Return_Button(105, 70, 120, 25, "Replace Next");
+    replace_next->callback(replace2_cb, this);
     replace_cancel = new Fl_Button(230, 60, 70, 25, "Cancel");
+    replace_cancel->callback(replcan_cb, this);
 }
 
 
