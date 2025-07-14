@@ -21,6 +21,7 @@ MyEditor::MyEditor(int w, int h, const char* t) : Fl_Double_Window(w, h, t) {
     // Define font
     editor->textfont(FL_COURIER);
     Fl_Menu_Bar *m = new Fl_Menu_Bar(0, 0, 640, 30);
+    this->resizable(editor);
     m->add("&File/New File", 0, (Fl_Callback *)new_cb);
     m->add("&File/Open File...", FL_CTRL + 'o', (Fl_Callback *)open_cb);
     m->add("&File/Save File...", FL_CTRL + 's', (Fl_Callback *)save_cb);
@@ -277,8 +278,4 @@ void set_title(Fl_Window *w){
     if (changed) strcat(title, " (modified)");
 
     w->label(title);
-}
-
-Fl_Window* new_view() {
-    return new MyEditor(640, 400, "Text Editor");
 }
