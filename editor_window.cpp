@@ -201,9 +201,9 @@ void replall_cb(Fl_Widget*, void* v){
             e->editor->show_insert_position();
             times++;
         }
-        if (times) fl_message("Repalced %d occurences", times);
-        else fl_alert("No occurences of \'%s\' found.", find);
     }
+    if (times) fl_message("Replaced %d occurences", times);
+    else fl_alert("No occurences of \'%s\' found.", find);
 }
 
 void replcan_cb(Fl_Widget*, void* v){
