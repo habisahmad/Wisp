@@ -20,6 +20,9 @@ MyEditor::MyEditor(int w, int h, const char* t) : Fl_Double_Window(w, h, t) {
 
     // Define font
     editor->textfont(FL_COURIER);
+    editor->linenumber_width(40);
+    editor->linenumber_align(FL_ALIGN_RIGHT);
+    editor->linenumber_format(" %d ");
     Fl_Menu_Bar *m = new Fl_Menu_Bar(0, 0, 640, 30);
     this->resizable(editor);
     m->add("&File/New File", 0, (Fl_Callback *)new_cb);
