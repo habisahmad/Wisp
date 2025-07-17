@@ -12,13 +12,14 @@
 #include <FL/fl_ask.H>
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Menu_Bar.H>
-
+#include <FL/Fl_Text_Display.H>
 
 extern int changed;
 extern int loading;
 extern char filename[256];
 extern char title[256];
 extern Fl_Text_Buffer* textbuf;
+extern Fl_Text_Buffer* stylebuf;
 
 
 class MyEditor : public Fl_Double_Window {

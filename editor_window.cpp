@@ -1,4 +1,5 @@
 #include "editor_window.hpp"
+#include "syntax_highlighting.hpp"
 #include <cstring> 
 #include <cerrno>
 #include <stdlib.h>
@@ -8,20 +9,25 @@ int loading = 0;
 char filename[256] = "";
 char title[256] = "";
 Fl_Text_Buffer* textbuf;
+Fl_Text_Buffer* stylebuf;
 
 MyEditor::MyEditor(int w, int h, const char* t) : Fl_Double_Window(w, h, t) {
     textbuf = new Fl_Text_Buffer();
+    stylebuf = new Fl_Text_Buffer();
     editor = new Fl_Text_Editor(0, 30, 640, 370);
     editor->buffer(textbuf);
 
     // Keeps track of changes to a file
     textbuf->add_modify_callback(changed_cb, this);
     textbuf->call_modify_callbacks();
+    editor->highlight_data(stylebuf, styletable, sizeof(styletable) / sizeof(styletable[0]), 'A', style_unfinished_cb, 0);
 
+    textbuf->add_modify_callback(style_update, editor);
     // Define font
     editor->textfont(FL_COURIER);
     editor->linenumber_width(40);
     editor->linenumber_align(FL_ALIGN_RIGHT);
+    editor->linenumber_size(12);
     editor->linenumber_format(" %d ");
     Fl_Menu_Bar *m = new Fl_Menu_Bar(0, 0, 640, 30);
     this->resizable(editor);
@@ -274,9 +280,11 @@ void set_title(Fl_Window *w){
         char *slash;
         slash = strrchr(filename, '/');
 #ifdef WIN32
+        if (slash == NULL) slash = strrchr(filename, '\\');
+#endif
         if (slash != NULL) strcpy(title, slash + 1);
         else strcpy(title, filename);
-#endif
+
     }
     if (changed) strcat(title, " (modified)");
 
